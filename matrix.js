@@ -50,7 +50,7 @@ function MatrixOf(numRows, numCols, value)
     for (let i = 0; i < numRows; i++)
     {
         var row = [];
-        for (let j =0; j < numRows; j++)
+        for (let j =0; j < numCols; j++)
         {
             row.push(value);
         }
@@ -104,9 +104,19 @@ function MatrixMultiply(left, right)
         throw "Inner matrix dimensions do notmatch for multiplication";
     }
 
-    let outputMatrix = Zeros(left.NumRows, right.numCols);
+    let outputMatrix = Zeros(left.NumRows, right.NumCols);
 
-
+	for (let i = 0; i < left.NumRows; i++) {
+		for (let j = 0; j < right.NumCols; j++) 
+        {
+			let tmp = 0;
+            for (let k = 0; k < left.NumCols; k++) 
+            {	
+                tmp += (right.Index(k, j) * left.Index(i, k));  				
+            }
+			outputMatrix.Modify(i, j, tmp);
+		}
+	}
 
     return outputMatrix;
 }
