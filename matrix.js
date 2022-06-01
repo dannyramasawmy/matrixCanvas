@@ -167,7 +167,8 @@ function Transpose(matrix)
 }
 
 // linear steps 
-function Linspace(start, end, steps) {
+function Linspace(start, end, steps) 
+{
     let stepSize = (end - start) / (steps - 1);
     let matrix = Zeros(1, steps);
     
