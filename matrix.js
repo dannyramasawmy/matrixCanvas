@@ -70,8 +70,12 @@ function MatrixOf(numRows, numCols, value)
         matrix.push(row);
     }
     
-    return  new Matrix(numRows, numCols, matrix);;
+    return new Matrix(numRows, numCols, matrix);;
 }
+
+// =============================================================================
+// Functions
+// =============================================================================
 
 // map a function to the matrix
 function MatrixMap(matrix, func)
@@ -147,14 +151,39 @@ function ArrayToMatrix(array)
     return outputMatrix;
 }
 
-// =============================================================================
-// Functions
-// =============================================================================
+// transpose matrix
+function Transpose(matrix)
+{
+    var outputMatrix = Zeros(matrix.NumCols, matrix.NumRows);
+    for (var i = 0; i < outputMatrix.NumRows; i++)
+    {
+        for (var j = 0; j < outputMatrix.NumCols; j++)
+        {
+            outputMatrix.Modify(i, j, matrix.Index(j, i));
+        }
+    }
+    
+    return outputMatrix;
+}
+
+// linear steps 
+function Linspace(start, end, steps) {
+    let stepSize = (end - start) / (steps - 1);
+    let matrix = Zeros(1, steps);
+    
+    for (let i = 0; i < steps; i++) 
+    {
+        matrix.Modify(0, i, start + i * stepSize);
+    }
+
+    return matrix;
+}
 
 // matrix creators
 Zeros = (numRows, numCols) => { return MatrixOf(numRows, numCols, 0) }; 
 Ones = (numRows, numCols) => { return MatrixOf(numRows, numCols, 1) }; 
 RandomMatrix = (numRows, numCols) => { return MatrixMap(Ones(numRows, numCols), (x) => Math.random() )};
+IntegerRange = (start, end) => { return Linspace(start, end, end - start + 1)};
 
 // left and right element wise matrix operators
 Add2 = (left, right) => { return MatrixMap2(left, right, (x, y) => x + y); }
@@ -167,9 +196,12 @@ Add = (matrix, value) => { return MatrixMap(matrix, (x) => x + value); }
 Subtract = (matrix, value) => { return MatrixMap(matrix, (x) => x - value); }
 Multiply = (matrix, value) => { return MatrixMap(matrix, (x) => x * value); }
 Divide = (matrix, value) => { return MatrixMap(matrix, (x) => x / value); }
+
+// single matrix operations
 Square = (matrix) => {return Multiply2(matrix, matrix)};
 Sqrt = (matrix) => {return MatrixMap(matrix, (x) => Math.sqrt(x))};
 Abs = (matrix) => {return MatrixMap(matrix, (x) => Math.abs(x))};
+Normalise = (matrix) => {  return Divide(matrix, MaxAbs(matrix)) };
   
 // returning single values / reducing operations
 MatrixReduce = (matrix, func) => { return matrix.ToArray().reduce(func); }
@@ -177,7 +209,9 @@ Total = (matrix) => { return MatrixReduce(matrix, (x, y) => x + y) };
 Max = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.max(x, y)) };
 Min = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.min(x, y)) };
 MaxAbs = (matrix) => { return Max(Abs(matrix))};
- 
 
+// =============================================================================
+// Done
+// =============================================================================
 
 console.log("Finished adding matrix library");
