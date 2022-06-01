@@ -3,7 +3,7 @@
 This will have a library for manipulating matrices and drawing them on a canvas element.
 
 ## Currently contains
-```
+```javascript
 Matrix(numRow, numCols, data)
 MatrixOf(numRows, numCols, value)
 MatrixMap(matrix, func)
