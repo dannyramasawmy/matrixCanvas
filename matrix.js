@@ -35,6 +35,19 @@ function Matrix(numRow, numCols, data)
         this.CheckIndices(i, j);
         this.Data[i][j] = element;
     }
+
+    this.ToArray = function()
+    {
+        let outputArray = [];
+        for (var i = 0; i < this.NumRows; i++) 
+        {
+            for (var j = 0; j < this.NumCols; j++)
+            {
+                outputArray.push(this.Index(i, j));
+            }
+        }
+        return outputArray;
+    }
 }
 
 // Create zeros matrix
@@ -121,13 +134,27 @@ function MatrixMultiply(left, right)
     return outputMatrix;
 }
 
+// create a matric from array
+function ArrayToMatrix(array)
+{
+    let outputMatrix = Zeros(1, array.length);
+
+    for (var j = 0; j < array.length; j++)
+    {
+        outputMatrix.Modify(0, j, array[j]);
+    }
+
+    return outputMatrix;
+}
+
 // =============================================================================
 // Functions
 // =============================================================================
 
-// matrix of ones
+// matrix creators
 Zeros = (numRows, numCols) => { return MatrixOf(numRows, numCols, 0) }; 
 Ones = (numRows, numCols) => { return MatrixOf(numRows, numCols, 1) }; 
+RandomMatrix = (numRows, numCols) => { return MatrixMap(Ones(numRows, numCols), (x) => Math.random() )};
 
 // left and right element wise matrix operators
 Add2 = (left, right) => { return MatrixMap2(left, right, (x, y) => x + y); }
@@ -144,9 +171,13 @@ Square = (matrix) => {return Multiply2(matrix, matrix)};
 Sqrt = (matrix) => {return MatrixMap(matrix, (x) => Math.sqrt(x))};
 Abs = (matrix) => {return MatrixMap(matrix, (x) => Math.abs(x))};
   
-
-
-
+// returning single values / reducing operations
+MatrixReduce = (matrix, func) => { return matrix.ToArray().reduce(func); }
+Total = (matrix) => { return MatrixReduce(matrix, (x, y) => x + y) };
+Max = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.max(x, y)) };
+Min = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.min(x, y)) };
+MaxAbs = (matrix) => { return Max(Abs(matrix))};
+ 
 
 
 console.log("Finished adding matrix library");
