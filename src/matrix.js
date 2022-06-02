@@ -213,8 +213,11 @@ Divide = (matrix, value) => MatrixMap(matrix, x => x / value);
 
 // single matrix operations
 Sin = matrix => MatrixMap(matrix, x => Math.sin(x));
+Sin2 = matrix => MatrixMap(matrix, x => Math.sin(2 * x));
 Cos = matrix => MatrixMap(matrix, x => Math.cos(x));
+Cos2 = matrix => MatrixMap(matrix, x => Math.cos(2 * x));
 Tan = matrix => MatrixMap(matrix, x => Math.tan(x));
+Tan2 = matrix => MatrixMap(matrix, x => Math.tan(x * 2));
 Square = matrix => Multiply2(matrix, matrix);
 Sqrt = matrix => MatrixMap(matrix, x => Math.sqrt(x));
 Abs = matrix => MatrixMap(matrix, x => Math.abs(x));
