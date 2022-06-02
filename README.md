@@ -35,6 +35,9 @@ Divide(matrix, value)
 Square(matrix)
 Sqrt(matrix)
 Abs(matrix)
+Round(matrix)
+Floor(matrix)
+Ceil(matrix)
 Normalise(matrix)
   
 // matrix-reduce

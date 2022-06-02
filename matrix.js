@@ -13,15 +13,8 @@ function Matrix(numRow, numCols, data)
     
     this.CheckIndices = function(i, j)
     {
-        if (i < 0 || j < 0)
-        {
-            throw "Index out of range";
-        }
-    
-        if (i >= this.NumRows || j >= this.NumCols)
-        {
-            throw "Index out of range";
-        }
+        if (i < 0 || j < 0) { throw "Index out of range"; }
+        if (i >= this.NumRows || j >= this.NumCols) { throw "Index out of range"; }
     }
 
     this.Index = function(i, j) 
@@ -34,6 +27,26 @@ function Matrix(numRow, numCols, data)
     {
         this.CheckIndices(i, j);
         this.Data[i][j] = element;
+    }
+
+    this.Sub = function(i0, i1, j0, j1)
+    {
+        this.CheckIndices(i0, j0);
+        if (i1 < i0 || j1 < j0) { throw "Indices are out range for sub matrix"}
+        if (i1 > this.NumRows || j1 > this.NumCols) { throw "Indices are out range for sub matrix"}
+
+        let NumRows = i1 == i0 ? 1 : i1 - i0;
+        let NumCols = j1 == j0 ? 1 : j1 - j0;
+
+        let outputArray = Zeros(NumRows, NumCols);
+        for (var i = i0; i < i0 + NumRows; i++) 
+        {
+            for (var j = j0; j < j0 + NumCols; j++)
+            {
+                outputArray.Modify((i - i0), (j - j0), this.Index(i, j));
+            }
+        }
+        return outputArray;
     }
 
     this.ToArray = function()
@@ -202,6 +215,9 @@ Divide = (matrix, value) => { return MatrixMap(matrix, (x) => x / value); }
 Square = (matrix) => {return Multiply2(matrix, matrix)};
 Sqrt = (matrix) => {return MatrixMap(matrix, (x) => Math.sqrt(x))};
 Abs = (matrix) => {return MatrixMap(matrix, (x) => Math.abs(x))};
+Round = (matrix) => {return MatrixMap(matrix, (x) => Math.round(x))};
+Floor = (matrix) => {return MatrixMap(matrix, (x) => Math.floor(x))};
+Ceil = (matrix) => {return MatrixMap(matrix, (x) => Math.ceil(x))};
 Normalise = (matrix) => {  return Divide(matrix, MaxAbs(matrix)) };
   
 // returning single values / reducing operations
