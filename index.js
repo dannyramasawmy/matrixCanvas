@@ -4,4 +4,16 @@
 
 console.log("Start programme");
 
-let {X, Y} = GetCoordinateMatricesFromCanvas("drawing-canvas", 10);
+var canvasId = "drawing-canvas";
+let canvas = document.getElementById(canvasId);
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+// get mesh coordinates from canvas element
+let {X, Y, gridSpacing} = MeshGridFromCanvas(canvasId, 75);
+
+// generate a random matrix array
+let V = RandomMatrix(X.NumRows, X.NumCols);
+
+// plot
+GridPlot(canvasId, X, Y, V, gridSpacing, CircleMaker);
