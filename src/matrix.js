@@ -226,6 +226,7 @@ Total = (matrix) => { return MatrixReduce(matrix, (x, y) => x + y) };
 Max = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.max(x, y)) };
 Min = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.min(x, y)) };
 MaxAbs = (matrix) => { return Max(Abs(matrix))};
+Length = (matrix) => { return Math.max(matrix.NumRows, matrix.NumCols) };
 
 // =============================================================================
 // Done
