@@ -196,7 +196,7 @@ function Linspace(start, end, steps)
 // matrix creators
 Zeros = (numRows, numCols) => MatrixOf(numRows, numCols, 0); 
 Ones = (numRows, numCols) => MatrixOf(numRows, numCols, 1); 
-RandomMatrix = (numRows, numCols) => MatrixMap(Ones(numRows, numCols), (x) => Math.random() );
+RandomMatrix = (numRows, numCols) => MatrixMap(Ones(numRows, numCols), x => Math.random() );
 IntegerRange = (start, end) => Linspace(start, end, end - start + 1);
 
 // left and right element wise matrix operators
@@ -206,21 +206,24 @@ Multiply2 = (left, right) => MatrixMap2(left, right, (x, y) => x * y);
 Divide2 = (left, right) => MatrixMap2(left, right, (x, y) => x / y);
 
 // scalar matrix operators
-Add = (matrix, value) => MatrixMap(matrix, (x) => x + value);
-Subtract = (matrix, value) => MatrixMap(matrix, (x) => x - value);
-Multiply = (matrix, value) => MatrixMap(matrix, (x) => x * value);
-Divide = (matrix, value) => MatrixMap(matrix, (x) => x / value);
+Add = (matrix, value) => MatrixMap(matrix, x => x + value);
+Subtract = (matrix, value) => MatrixMap(matrix, x => x - value);
+Multiply = (matrix, value) => MatrixMap(matrix, x => x * value);
+Divide = (matrix, value) => MatrixMap(matrix, x => x / value);
 
 // single matrix operations
+Sin = matrix => MatrixMap(matrix, x => Math.sin(x));
+Cos = matrix => MatrixMap(matrix, x => Math.cos(x));
+Tan = matrix => MatrixMap(matrix, x => Math.tan(x));
 Square = matrix => Multiply2(matrix, matrix);
-Sqrt = matrix => MatrixMap(matrix, (x) => Math.sqrt(x));
-Abs = matrix => MatrixMap(matrix, (x) => Math.abs(x));
-Round = matrix => MatrixMap(matrix, (x) => Math.round(x));
-Floor = matrix => MatrixMap(matrix, (x) => Math.floor(x));
-Ceil = matrix => MatrixMap(matrix, (x) => Math.ceil(x));
+Sqrt = matrix => MatrixMap(matrix, x => Math.sqrt(x));
+Abs = matrix => MatrixMap(matrix, x => Math.abs(x));
+Round = matrix => MatrixMap(matrix, x => Math.round(x));
+Floor = matrix => MatrixMap(matrix, x => Math.floor(x));
+Ceil = matrix => MatrixMap(matrix, x => Math.ceil(x));
 Normalise = matrix => Divide(matrix, MaxAbs(matrix)) ;
 NormaliseForColourMap = matrix => Normalise(Subtract(matrix, Min(matrix)));
-  
+
 // returning single values / reducing operations
 MatrixReduce = (matrix, func) => matrix.ToArray().reduce(func);
 Total = matrix => MatrixReduce(matrix, (x, y) => x + y);
@@ -228,6 +231,10 @@ Max = matrix => MatrixReduce(matrix, (x, y) => Math.max(x, y));
 Min = matrix => MatrixReduce(matrix, (x, y) => Math.min(x, y));
 MaxAbs = matrix => Max(Abs(matrix));
 Length = matrix => Math.max(matrix.NumRows, matrix.NumCols);
+
+// constants
+const Pi = Math.PI;
+const Tau = 2 * Math.PI;
 
 // =============================================================================
 // Done
