@@ -1,6 +1,6 @@
 # matrixCanvas
 
-This will have a library for manipulating matrices and drawing them on a canvas element.
+This will have a library for manipulating matrices and drawing them on a canvas element, [see here](https://dannyramasawmy.github.io/matrixCanvas/).
 
 ## Currently contains
 ```javascript
