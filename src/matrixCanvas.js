@@ -62,23 +62,49 @@ function GridPlot(canvasId, X, Y, V, gridSpacing, funcWithDraw)
 // =============================================================================
 
 CircleMaker = (x, y, value, gridSpacing) => { return new Circle(x, y, value, gridSpacing) }
+SquareMaker = (x, y, value, gridSpacing) => { return new Square(x, y, value, gridSpacing) }
 
 function Circle(x, y, value, gridSpacing) {
     this.X = x;
     this.Y = y;
     this.MaxRadius = gridSpacing / 2;
     this.Radius = this.MaxRadius * value;
-    this.Color = `rgba(${value * 255}, ${value * 255}, ${value * 255}, ${value});`;
+    this.Color = Gray(value, true);
 
     this.Draw = function(c)
     {
         c.beginPath();
         c.arc(this.X, this.Y, this.Radius, 0, Math.PI * 2, false);
-        c.fillStyle = this.color;
+        c.fillStyle = this.Color;
         c.fill();
     };
 };
 
+function Square(x, y, value, gridSpacing) {
+    this.X = x;
+    this.Y = y;
+    this.SideLength = value;
+    this.MaxWidth = gridSpacing;
+    this.Color = Red(value, false);
+
+    this.Draw = function(c)
+    {
+        c.beginPath();
+        c.rect(x - this.MaxWidth / 2, y - this.MaxWidth / 2, this.MaxWidth, this.MaxWidth);
+        c.fillStyle = this.Color;
+        c.fill();
+    };
+};
+
+
+// =============================================================================
+// Colormaps
+// =============================================================================
+
+Red = (intensity, isTranslucent) => {return `rgba(${intensity * 255}, 0, 0, ${isTranslucent? intensity : 1})`;} 
+Green = (intensity, isTranslucent) => {return `rgba(0, ${intensity * 255}, 0, ${isTranslucent? intensity : 1})`;} 
+Blue = (intensity, isTranslucent) => {return `rgba(0, 0, ${intensity * 255}, ${isTranslucent? intensity : 1})`;} 
+Gray = (intensity, isTranslucent, scale=255) => {return `rgba(${intensity * scale}, ${intensity * scale},${intensity * scale}, ${isTranslucent? intensity : 1})`;} 
 
 // =============================================================================
 // Done
