@@ -6,7 +6,7 @@ console.log("Adding matrixCanvas library")
 
 function MeshGridFromCanvas(canvasId, numOfPointsShortestAxis)
 {
-    if (numOfPointsShortestAxis < 1) {throw "Invalid number grid samples"}
+    if (numOfPointsShortestAxis < 1) { throw "Invalid number grid samples" }
 
     // canvas measurements
     let canvas = document.getElementById(canvasId);
@@ -40,12 +40,12 @@ function MeshGridFromCanvas(canvasId, numOfPointsShortestAxis)
 
 function GridPlot(canvasId, X, Y, V, gridSpacing, funcWithDraw)
 {
-    if (!(X.NumRows == Y.NumRows && X.NumRows == V.NumRows)) {throw "Grid plot dimensions do not agree"}
-    if (!(X.NumCols == Y.NumCols && X.NumCols == V.NumCols)) {throw "Grid plot dimensions do not agree"}
+    if (!(X.NumRows == Y.NumRows && X.NumRows == V.NumRows)) { throw "Grid plot dimensions do not agree" }
+    if (!(X.NumCols == Y.NumCols && X.NumCols == V.NumCols)) { throw "Grid plot dimensions do not agree" }
     
     let canvas = document.getElementById(canvasId);
     let c = canvas.getContext('2d')
-    let Vn = Normalise(V);
+    let Vn = NormaliseForColourMap(V); // has range 0 to 1
 
     for (var i = 0; i < X.NumRows; i++)
     {
@@ -61,15 +61,18 @@ function GridPlot(canvasId, X, Y, V, gridSpacing, funcWithDraw)
 // Shapes
 // =============================================================================
 
-CircleMaker = (x, y, value, gridSpacing) => { return new Circle(x, y, value, gridSpacing) }
-SquareMaker = (x, y, value, gridSpacing) => { return new Square(x, y, value, gridSpacing) }
+ScaledCircleMaker = (x, y, value, gridSpacing) => new Circle(x, y, value, gridSpacing, true);
+ScaledSquareMaker = (x, y, value, gridSpacing) => new Square(x, y, value, gridSpacing, true);
+FixedCircleMaker = (x, y, value, gridSpacing) => new Circle(x, y, value, gridSpacing, false);
+FixedSquareMaker = (x, y, value, gridSpacing) => new Square(x, y, value, gridSpacing, false);
 
-function Circle(x, y, value, gridSpacing) {
+function Circle(x, y, value, gridSpacing, scaleDimension) 
+{
     this.X = x;
     this.Y = y;
     this.MaxRadius = gridSpacing / 2;
-    this.Radius = this.MaxRadius * value;
-    this.Color = Gray(value, true);
+    this.Radius = this.MaxRadius * (scaleDimension ? Math.abs(value) : 1);
+    this.Color = Burgandy(value, false);
 
     this.Draw = function(c)
     {
@@ -80,12 +83,13 @@ function Circle(x, y, value, gridSpacing) {
     };
 };
 
-function Square(x, y, value, gridSpacing) {
+function Square(x, y, value, gridSpacing, scaleDimension) 
+{
     this.X = x;
     this.Y = y;
-    this.SideLength = value;
-    this.MaxWidth = gridSpacing;
-    this.Color = Red(value, false);
+    this.SideLength = Math.abs(value);
+    this.MaxWidth = gridSpacing * (scaleDimension ? Math.abs(value) : 1);
+    this.Color = YellowDarkGreen(value, false);
 
     this.Draw = function(c)
     {
@@ -98,13 +102,38 @@ function Square(x, y, value, gridSpacing) {
 
 
 // =============================================================================
-// Colormaps
+// Colormaps accepting ranges from 0 to 1
 // =============================================================================
 
-Red = (intensity, isTranslucent) => {return `rgba(${intensity * 255}, 0, 0, ${isTranslucent? intensity : 1})`;} 
-Green = (intensity, isTranslucent) => {return `rgba(0, ${intensity * 255}, 0, ${isTranslucent? intensity : 1})`;} 
-Blue = (intensity, isTranslucent) => {return `rgba(0, 0, ${intensity * 255}, ${isTranslucent? intensity : 1})`;} 
-Gray = (intensity, isTranslucent, scale=255) => {return `rgba(${intensity * scale}, ${intensity * scale},${intensity * scale}, ${isTranslucent? intensity : 1})`;} 
+Scale = (v, range=255) => v * range;
+
+// primary
+Red = (v, hasAlpha) => `rgba(${Scale(v)}, 0, 0, ${Math.abs(hasAlpha) ? v : 1})`;
+Green = (v, hasAlpha) => `rgba(0, ${Scale(v)}, 0, ${hasAlpha? v : 1})`;
+Blue = (v, hasAlpha) => `rgba(0, 0, ${Scale(v)}, ${hasAlpha? v : 1})`;
+Gray = (v, hasAlpha) => `rgba(${Scale(v)}, ${Scale(v)}, ${Scale(v)}, ${hasAlpha? v : 1})`;
+
+// single colors
+Indigo = (v, hasAlpha) => `rgba(${Scale(v)}, ${Scale(v)}, 255, ${hasAlpha? v : 1})`;
+Yellow = (v, hasAlpha) => `rgba(${Scale(v)}, ${Scale(v)}, 0, ${hasAlpha? v : 1})`;
+DarkGreen = (v, hasAlpha) => `rgba(${Scale(v)}, 255, ${Scale(v)}, ${hasAlpha? v : 1})`;
+Purple = (v, hasAlpha) => `rgba(${Scale(v)}, 0, ${Scale(v)}, ${hasAlpha? v : 1})`;
+Burgandy = (v, hasAlpha) => `rgba(255, ${Scale(v)}, ${Scale(v)}, ${hasAlpha? v : 1})`;
+Cyan = (v, hasAlpha) => `rgba(0, ${Scale(v)}, ${Scale(v)}, ${hasAlpha? v : 1})`;
+
+// two tone
+ColourColour = (v, hasAlpha, fColor1, fColor2) => (v < 0.5) ? fColor1(Math.abs(v - 1), hasAlpha) : fColor2(v, hasAlpha);
+
+RedGreen = (v, hasAlpha) => ColourColour(v, hasAlpha, Red, Green);
+RedBlue = (v, hasAlpha) => ColourColour(v, hasAlpha, Red, Blue);
+GreenRed = (v, hasAlpha) => ColourColour(v, hasAlpha, Green, Red);
+GreenBlue = (v, hasAlpha) => ColourColour(v, hasAlpha, Green, Blue);
+BlueRed = (v, hasAlpha) => ColourColour(v, hasAlpha, Blue, Red);
+BlueGreen = (v, hasAlpha) => ColourColour(v, hasAlpha, Blue, Green);
+
+YellowDarkGreen = (v, hasAlpha) => ColourColour(v, hasAlpha, Yellow, DarkGreen);
+BurgandyPurple = (v, hasAlpha) => ColourColour(v, hasAlpha, Burgandy, Purple);
+
 
 // =============================================================================
 // Done

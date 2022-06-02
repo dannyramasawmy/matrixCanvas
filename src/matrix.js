@@ -194,39 +194,40 @@ function Linspace(start, end, steps)
 }
 
 // matrix creators
-Zeros = (numRows, numCols) => { return MatrixOf(numRows, numCols, 0) }; 
-Ones = (numRows, numCols) => { return MatrixOf(numRows, numCols, 1) }; 
-RandomMatrix = (numRows, numCols) => { return MatrixMap(Ones(numRows, numCols), (x) => Math.random() )};
-IntegerRange = (start, end) => { return Linspace(start, end, end - start + 1)};
+Zeros = (numRows, numCols) => MatrixOf(numRows, numCols, 0); 
+Ones = (numRows, numCols) => MatrixOf(numRows, numCols, 1); 
+RandomMatrix = (numRows, numCols) => MatrixMap(Ones(numRows, numCols), (x) => Math.random() );
+IntegerRange = (start, end) => Linspace(start, end, end - start + 1);
 
 // left and right element wise matrix operators
-Add2 = (left, right) => { return MatrixMap2(left, right, (x, y) => x + y); }
-Subtract2 = (left, right) => { return MatrixMap2(left, right, (x, y) => x - y); }
-Multiply2 = (left, right) => { return MatrixMap2(left, right, (x, y) => x * y); }
-Divide2 = (left, right) => { return MatrixMap2(left, right, (x, y) => x / y); }
+Add2 = (left, right) => MatrixMap2(left, right, (x, y) => x + y);
+Subtract2 = (left, right) => MatrixMap2(left, right, (x, y) => x - y);
+Multiply2 = (left, right) => MatrixMap2(left, right, (x, y) => x * y);
+Divide2 = (left, right) => MatrixMap2(left, right, (x, y) => x / y);
 
 // scalar matrix operators
-Add = (matrix, value) => { return MatrixMap(matrix, (x) => x + value); }
-Subtract = (matrix, value) => { return MatrixMap(matrix, (x) => x - value); }
-Multiply = (matrix, value) => { return MatrixMap(matrix, (x) => x * value); }
-Divide = (matrix, value) => { return MatrixMap(matrix, (x) => x / value); }
+Add = (matrix, value) => MatrixMap(matrix, (x) => x + value);
+Subtract = (matrix, value) => MatrixMap(matrix, (x) => x - value);
+Multiply = (matrix, value) => MatrixMap(matrix, (x) => x * value);
+Divide = (matrix, value) => MatrixMap(matrix, (x) => x / value);
 
 // single matrix operations
-Square = (matrix) => {return Multiply2(matrix, matrix)};
-Sqrt = (matrix) => {return MatrixMap(matrix, (x) => Math.sqrt(x))};
-Abs = (matrix) => {return MatrixMap(matrix, (x) => Math.abs(x))};
-Round = (matrix) => {return MatrixMap(matrix, (x) => Math.round(x))};
-Floor = (matrix) => {return MatrixMap(matrix, (x) => Math.floor(x))};
-Ceil = (matrix) => {return MatrixMap(matrix, (x) => Math.ceil(x))};
-Normalise = (matrix) => {  return Divide(matrix, MaxAbs(matrix)) };
+Square = matrix => Multiply2(matrix, matrix);
+Sqrt = matrix => MatrixMap(matrix, (x) => Math.sqrt(x));
+Abs = matrix => MatrixMap(matrix, (x) => Math.abs(x));
+Round = matrix => MatrixMap(matrix, (x) => Math.round(x));
+Floor = matrix => MatrixMap(matrix, (x) => Math.floor(x));
+Ceil = matrix => MatrixMap(matrix, (x) => Math.ceil(x));
+Normalise = matrix => Divide(matrix, MaxAbs(matrix)) ;
+NormaliseForColourMap = matrix => Normalise(Subtract(matrix, Min(matrix)));
   
 // returning single values / reducing operations
-MatrixReduce = (matrix, func) => { return matrix.ToArray().reduce(func); }
-Total = (matrix) => { return MatrixReduce(matrix, (x, y) => x + y) };
-Max = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.max(x, y)) };
-Min = (matrix) => { return MatrixReduce(matrix, (x, y) => Math.min(x, y)) };
-MaxAbs = (matrix) => { return Max(Abs(matrix))};
-Length = (matrix) => { return Math.max(matrix.NumRows, matrix.NumCols) };
+MatrixReduce = (matrix, func) => matrix.ToArray().reduce(func);
+Total = matrix => MatrixReduce(matrix, (x, y) => x + y);
+Max = matrix => MatrixReduce(matrix, (x, y) => Math.max(x, y));
+Min = matrix => MatrixReduce(matrix, (x, y) => Math.min(x, y));
+MaxAbs = matrix => Max(Abs(matrix));
+Length = matrix => Math.max(matrix.NumRows, matrix.NumCols);
 
 // =============================================================================
 // Done
