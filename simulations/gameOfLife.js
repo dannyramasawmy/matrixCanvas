@@ -10,7 +10,7 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 // get mesh coordinates from canvas element
-let {X, Y, gridSpacing} = MeshGridFromCanvas(canvasId, 150);
+let {X, Y, gridSpacing} = MeshGridFromCanvas(canvasId, 100);
 
 // generate a random matrix array
 let randomStart = RandomMatrix(X.NumRows, X.NumCols);
@@ -33,10 +33,11 @@ ApplyRules = (c, n) =>
     return 0;
 }
 
-function animate() {
-    
+ConwayCircles = (x, y, value, gridSpacing) => new Circle(x, y, value, gridSpacing, false);
+
+function animate() {  
     ClearCanvas(canvasId);
-    GridPlot(canvasId, X, Y, currentTimeStep, gridSpacing, ScaledCircleMaker);
+    GridPlot(canvasId, X, Y, currentTimeStep, gridSpacing, ConwayCircles);
 
     let neighbours = AddNeighbours(PadWithZeros(currentTimeStep));
 

@@ -72,7 +72,7 @@ function Circle(x, y, value, gridSpacing, scaleDimension)
     this.Y = y;
     this.MaxRadius = gridSpacing / 2;
     this.Radius = this.MaxRadius * (scaleDimension ? Math.abs(value) : 1);
-    this.Color = Burgandy(value, false);
+    this.Color = TwoToneBurgandy(value, true);
 
     this.Draw = function(c)
     {
@@ -133,6 +133,8 @@ BlueGreen = (v, hasAlpha) => ColourColour(v, hasAlpha, Blue, Green);
 
 YellowDarkGreen = (v, hasAlpha) => ColourColour(v, hasAlpha, Yellow, DarkGreen);
 BurgandyPurple = (v, hasAlpha) => ColourColour(v, hasAlpha, Burgandy, Purple);
+
+TwoToneBurgandy = (v, hasAlpha) => (v < 0.5) ? `rgba(0, ${Scale(v)}, ${Scale(v)}, ${hasAlpha? v : 1})` : "#800020";
 
 
 // =============================================================================
