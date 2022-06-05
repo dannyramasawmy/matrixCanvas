@@ -225,6 +225,43 @@ function Linspace(start, end, steps)
     return matrix;
 }
 
+// concatenation
+function Concat(isVertical, ...matrices)
+{
+    if (matrices.length < 1) {throw "Not enough arguments for concat"}
+    if (matrices.length == 1) return args;
+    
+    // check consistency
+    let stackNumber = [0];
+    let consistentDimension = matrices[0].NumCols;
+    let getStackDimension = (m) => isVertical ? m.NumRows : m.NumCols;
+    let getConsistentDimension = (m) => isVertical ? m.NumCols : m.NumRows;
+
+    for (let i = 0; i < matrices.length; i++ )
+    {
+        if (getConsistentDimension(matrices[i]) != consistentDimension)
+            throw "Concat dimensions are inconsistent";
+
+        stackNumber.push(getStackDimension(matrices[i]) + stackNumber[i]);
+    }
+
+    // initialise and copy across to output matrix
+    let initaliseMatrix = Zeros(stackNumber[stackNumber.length - 1], consistentDimension); 
+    let outputMatrix = isVertical ? initaliseMatrix : Transpose(initaliseMatrix);
+    for (let i = 0; i < matrices.length; i++)
+    {
+        if (isVertical)
+            outputMatrix.SetSubMatrix(stackNumber[i], stackNumber[i + 1], 0, consistentDimension, matrices[i]);
+        else
+            outputMatrix.SetSubMatrix(0, consistentDimension, stackNumber[i], stackNumber[i + 1],  matrices[i]);
+    }
+
+    return outputMatrix;
+}
+
+ConcatVertical = (...matrices) => Concat(true, ...matrices);
+ConcatHorizontal = (...matrices) => Concat(false, ...matrices);
+
 // matrix creators
 Zeros = (numRows, numCols) => MatrixOf(numRows, numCols, 0); 
 Ones = (numRows, numCols) => MatrixOf(numRows, numCols, 1); 
