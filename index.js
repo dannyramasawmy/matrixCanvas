@@ -46,7 +46,7 @@ function animate() {
 
     // update phase
     linearPhase += phaseIncrement;
-    let wave = Sin(Add(phaseMatrix, linearPhase)); 
+    let wave = Sin(AddScalar(phaseMatrix, linearPhase)); 
     
     GridPlot(canvasId, X, Y, wave, gridSpacing, ScaledCircleMaker);
 }

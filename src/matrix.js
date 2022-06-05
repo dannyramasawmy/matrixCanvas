@@ -13,8 +13,14 @@ function Matrix(numRow, numCols, data)
     
     this.CheckIndices = function(i, j)
     {
-        if (i < 0 || j < 0) { throw "Index out of range"; }
-        if (i >= this.NumRows || j >= this.NumCols) { throw "Index out of range"; }
+        if (i < 0 || j < 0) throw "Index out of range";
+        if (i >= this.NumRows || j >= this.NumCols) throw "Index out of range";
+    }
+
+    this.CheckIndicesForSubmatrix = function(i0, i1, j0, j1)
+    {
+        if (i1 < i0 || j1 < j0) throw "Indices are out range for sub matrix"
+        if (i1 > this.NumRows || j1 > this.NumCols) throw "Indices are out range for sub matrix"
     }
 
     this.Index = function(i, j) 
@@ -32,65 +38,48 @@ function Matrix(numRow, numCols, data)
     this.Sub = function(i0, i1, j0, j1)
     {
         this.CheckIndices(i0, j0);
-        if (i1 < i0 || j1 < j0) { throw "Indices are out range for sub matrix"}
-        if (i1 > this.NumRows || j1 > this.NumCols) { throw "Indices are out range for sub matrix"}
+        this.CheckIndicesForSubmatrix(i0, i1, j0, j1);
 
         let NumRows = i1 == i0 ? 1 : i1 - i0;
         let NumCols = j1 == j0 ? 1 : j1 - j0;
 
         let outputArray = Zeros(NumRows, NumCols);
         for (var i = i0; i < i0 + NumRows; i++) 
-        {
             for (var j = j0; j < j0 + NumCols; j++)
-            {
                 outputArray.Modify((i - i0), (j - j0), this.Index(i, j));
-            }
-        }
+        
         return outputArray;
     }
 
     this.SetSubValue = function(i0, i1, j0, j1, value)
     {
         this.CheckIndices(i0, j0);
-        if (i1 < i0 || j1 < j0) { throw "Indices are out range for sub matrix"}
-        if (i1 > this.NumRows || j1 > this.NumCols) { throw "Indices are out range for sub matrix"}
+        this.CheckIndicesForSubmatrix(i0, i1, j0, j1);
 
         for (var i = i0; i < i1; i++) 
-        {
             for (var j = j0; j < j1; j++)
-            {
                 this.Modify(i, j, value);
-            }
-        }
     }
 
     this.SetSubMatrix = function(i0, i1, j0, j1, matrix)
     {
         this.CheckIndices(i0, j0);
-        if (i1 < i0 || j1 < j0) { throw "Indices are out range for sub matrix"}
-        if (i1 > this.NumRows || j1 > this.NumCols) { throw "Indices are out range for sub matrix"}
-        if (i1 - i0 != matrix.NumRows) { throw "Sub matrix and indicies must agree"}
-        if (j1 - j0 != matrix.NumCols) { throw "Sub matrix and indicies must agree"}
+        this.CheckIndicesForSubmatrix(i0, i1, j0, j1);
+        if (i1 - i0 != matrix.NumRows) throw "Sub matrix and indicies must agree"
+        if (j1 - j0 != matrix.NumCols) throw "Sub matrix and indicies must agree"
 
         for (var i = i0; i < i1; i++) 
-        {
             for (var j = j0; j < j1; j++)
-            {
                 this.Modify(i, j, matrix.Index(i - i0, j - j0));
-            }
-        }
     }
 
     this.ToArray = function()
     {
         let outputArray = [];
         for (var i = 0; i < this.NumRows; i++) 
-        {
             for (var j = 0; j < this.NumCols; j++)
-            {
                 outputArray.push(this.Index(i, j));
-            }
-        }
+        
         return outputArray;
     }
 }
@@ -98,10 +87,7 @@ function Matrix(numRow, numCols, data)
 // Create zeros matrix
 function MatrixOf(numRows, numCols, value)
 {
-    if (numRows === 0 || numCols === 0)
-    {
-        throw "Invalid number of rows";
-    }
+    if (numRows === 0 || numCols === 0) throw "Invalid number of rows";
 
     let matrix = [];
     
@@ -109,9 +95,8 @@ function MatrixOf(numRows, numCols, value)
     {
         var row = [];
         for (let j =0; j < numCols; j++)
-        {
             row.push(value);
-        }
+        
         matrix.push(row);
     }
     
@@ -129,9 +114,7 @@ function MatrixMap(matrix, func)
     for (let i = 0; i < matrix.NumRows; i++)
     {
         for (var j = 0; j < matrix.NumCols; j++)
-        {
             outputMatrix.Modify(i, j, func(matrix.Index(i, j)));
-        }
     }
     
     return outputMatrix;
@@ -141,18 +124,14 @@ function MatrixMap(matrix, func)
 function MatrixMap2(left, right, func)
 {
     if (left.NumRows != right.NumRows || left.NumCols != right.NumCols)
-    {
         throw "Incompatible element wise matrix operation";
-    }
     
     let outputMatrix = Zeros(left.NumRows, left.NumCols);
     
     for (let i = 0; i < left.NumRows; i++)
     {
         for (var j = 0; j < right.NumCols; j++)
-        {
             outputMatrix.Modify(i, j, func(left.Index(i, j), right.Index(i, j)));
-        }
     }
 
     return outputMatrix;
@@ -161,10 +140,7 @@ function MatrixMap2(left, right, func)
 // matrix multiplication
 function MatrixMultiply(left, right)
 {
-    if (left.numCols != right.numRow)
-    {
-        throw "Inner matrix dimensions do notmatch for multiplication";
-    }
+    if (left.numCols != right.numRow) throw "Inner matrix dimensions do not match for multiplication";
 
     let outputMatrix = Zeros(left.NumRows, right.NumCols);
 
@@ -173,10 +149,9 @@ function MatrixMultiply(left, right)
         {
 			let tmp = 0;
             for (let k = 0; k < left.NumCols; k++) 
-            {	
                 tmp += (right.Index(k, j) * left.Index(i, k));  				
-            }
-			outputMatrix.Modify(i, j, tmp);
+
+            outputMatrix.Modify(i, j, tmp);
 		}
 	}
 
@@ -189,9 +164,7 @@ function ArrayToMatrix(array)
     let outputMatrix = Zeros(1, array.length);
 
     for (var j = 0; j < array.length; j++)
-    {
         outputMatrix.Modify(0, j, array[j]);
-    }
 
     return outputMatrix;
 }
@@ -201,15 +174,33 @@ function Transpose(matrix)
 {
     var outputMatrix = Zeros(matrix.NumCols, matrix.NumRows);
     for (var i = 0; i < outputMatrix.NumRows; i++)
-    {
         for (var j = 0; j < outputMatrix.NumCols; j++)
-        {
             outputMatrix.Modify(i, j, matrix.Index(j, i));
-        }
-    }
     
     return outputMatrix;
 }
+
+function FlipVertical(matrix)
+{
+    var outputMatrix = Zeros(matrix.NumCols, matrix.NumRows);
+    for (var i = 0; i < outputMatrix.NumRows; i++)
+        for (var j = 0; j < outputMatrix.NumCols; j++)
+            outputMatrix.Modify(outputMatrix.NumRows - i - 1, j, matrix.Index(j, i));
+    
+    return outputMatrix;
+}
+
+function FlipHorizontal(matrix)
+{
+    var outputMatrix = Zeros(matrix.NumCols, matrix.NumRows);
+    for (var i = 0; i < outputMatrix.NumRows; i++)
+        for (var j = 0; j < outputMatrix.NumCols; j++)
+            outputMatrix.Modify(i, outputMatrix.NumCols - j - 1, matrix.Index(j, i));
+    
+    return outputMatrix;
+}
+
+
 
 // linear steps 
 function Linspace(start, end, steps) 
@@ -218,9 +209,7 @@ function Linspace(start, end, steps)
     let matrix = Zeros(1, steps);
     
     for (let i = 0; i < steps; i++) 
-    {
         matrix.Modify(0, i, start + i * stepSize);
-    }
 
     return matrix;
 }
@@ -228,7 +217,7 @@ function Linspace(start, end, steps)
 // concatenation
 function Concat(isVertical, ...matrices)
 {
-    if (matrices.length < 1) {throw "Not enough arguments for concat"}
+    if (matrices.length < 1) throw "Not enough arguments for concat"
     if (matrices.length == 1) return args;
     
     // check consistency
@@ -274,11 +263,17 @@ Subtract2 = (left, right) => MatrixMap2(left, right, (x, y) => x - y);
 Multiply2 = (left, right) => MatrixMap2(left, right, (x, y) => x * y);
 Divide2 = (left, right) => MatrixMap2(left, right, (x, y) => x / y);
 
+// arbitrary number of matrices, element wide operations
+Add = (...matrices) => matrices.reduce(Add2); 
+Subtract = (...matrices) => matrices.reduce(Subtract2); 
+Multiply = (...matrices) => matrices.reduce(Multiply2); 
+Divide = (...matrices) => matrices.reduce(Divide2); 
+
 // scalar matrix operators
-Add = (matrix, value) => MatrixMap(matrix, x => x + value);
-Subtract = (matrix, value) => MatrixMap(matrix, x => x - value);
-Multiply = (matrix, value) => MatrixMap(matrix, x => x * value);
-Divide = (matrix, value) => MatrixMap(matrix, x => x / value);
+AddScalar = (matrix, value) => MatrixMap(matrix, x => x + value);
+SubtractScalar = (matrix, value) => MatrixMap(matrix, x => x - value);
+MultiplyScalar = (matrix, value) => MatrixMap(matrix, x => x * value);
+DivideScalar = (matrix, value) => MatrixMap(matrix, x => x / value);
 
 // single matrix operations
 Sin = matrix => MatrixMap(matrix, x => Math.sin(x));
@@ -293,8 +288,9 @@ Abs = matrix => MatrixMap(matrix, x => Math.abs(x));
 Round = matrix => MatrixMap(matrix, x => Math.round(x));
 Floor = matrix => MatrixMap(matrix, x => Math.floor(x));
 Ceil = matrix => MatrixMap(matrix, x => Math.ceil(x));
-Normalise = matrix => Divide(matrix, MaxAbs(matrix)) ;
-NormaliseForColourMap = matrix => Normalise(Subtract(matrix, Min(matrix)));
+Normalise = matrix => DivideScalar(matrix, MaxAbs(matrix)) ;
+NormaliseForColourMap = matrix => Normalise(SubtractScalar(matrix, Min(matrix)));
+
 
 // returning single values / reducing operations
 MatrixReduce = (matrix, func) => matrix.ToArray().reduce(func);
@@ -303,6 +299,21 @@ Max = matrix => MatrixReduce(matrix, (x, y) => Math.max(x, y));
 Min = matrix => MatrixReduce(matrix, (x, y) => Math.min(x, y));
 MaxAbs = matrix => Max(Abs(matrix));
 Length = matrix => Math.max(matrix.NumRows, matrix.NumCols);
+
+// =============================================================================
+// Numerical
+// =============================================================================
+
+DiffHorizontal = matrix => Subtract(
+    matrix.Sub(0, matrix.NumRows, 1, matrix.NumCols), 
+    matrix.Sub(0, matrix.NumRows, 0, matrix.NumCols - 1)); 
+DiffVertical = matrix => Subtract(
+    matrix.Sub(1, matrix.NumRows, 0, matrix.NumCols), 
+    matrix.Sub(0, matrix.NumRows - 1, 0, matrix.NumCols));
+
+// =============================================================================
+// Constants
+// =============================================================================
 
 // constants
 const Pi = Math.PI;
