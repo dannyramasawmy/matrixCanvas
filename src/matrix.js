@@ -49,6 +49,38 @@ function Matrix(numRow, numCols, data)
         return outputArray;
     }
 
+    this.SetSubValue = function(i0, i1, j0, j1, value)
+    {
+        this.CheckIndices(i0, j0);
+        if (i1 < i0 || j1 < j0) { throw "Indices are out range for sub matrix"}
+        if (i1 > this.NumRows || j1 > this.NumCols) { throw "Indices are out range for sub matrix"}
+
+        for (var i = i0; i < i1; i++) 
+        {
+            for (var j = j0; j < j1; j++)
+            {
+                this.Modify(i, j, value);
+            }
+        }
+    }
+
+    this.SetSubMatrix = function(i0, i1, j0, j1, matrix)
+    {
+        this.CheckIndices(i0, j0);
+        if (i1 < i0 || j1 < j0) { throw "Indices are out range for sub matrix"}
+        if (i1 > this.NumRows || j1 > this.NumCols) { throw "Indices are out range for sub matrix"}
+        if (i1 - i0 != matrix.NumRows) { throw "Sub matrix and indicies must agree"}
+        if (j1 - j0 != matrix.NumCols) { throw "Sub matrix and indicies must agree"}
+
+        for (var i = i0; i < i1; i++) 
+        {
+            for (var j = j0; j < j1; j++)
+            {
+                this.Modify(i, j, matrix.Index(i - i0, j - j0));
+            }
+        }
+    }
+
     this.ToArray = function()
     {
         let outputArray = [];
