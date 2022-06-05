@@ -144,7 +144,8 @@ function MatrixMultiply(left, right)
 
     let outputMatrix = Zeros(left.NumRows, right.NumCols);
 
-	for (let i = 0; i < left.NumRows; i++) {
+	for (let i = 0; i < left.NumRows; i++) 
+    {
 		for (let j = 0; j < right.NumCols; j++) 
         {
 			let tmp = 0;
@@ -224,7 +225,7 @@ function Concat(isVertical, ...matrices)
     let getStackDimension = (m) => isVertical ? m.NumRows : m.NumCols;
     let getConsistentDimension = (m) => isVertical ? m.NumCols : m.NumRows;
 
-    for (let i = 0; i < matrices.length; i++ )
+    for (let i = 0; i < matrices.length; i++)
     {
         if (getConsistentDimension(matrices[i]) != consistentDimension)
             throw "Concat dimensions are inconsistent";
@@ -280,7 +281,8 @@ Cos = matrix => MatrixMap(matrix, x => Math.cos(x));
 Cos2 = matrix => MatrixMap(matrix, x => Math.cos(2 * x));
 Tan = matrix => MatrixMap(matrix, x => Math.tan(x));
 Tan2 = matrix => MatrixMap(matrix, x => Math.tan(x * 2));
-Square = matrix => Multiply2(matrix, matrix);
+Exp = matrix => MatrixMap(matrix, x => Math.exp(x * 2));
+Pow2 = matrix => Multiply2(matrix, matrix);
 Sqrt = matrix => MatrixMap(matrix, x => Math.sqrt(x));
 Abs = matrix => MatrixMap(matrix, x => Math.abs(x));
 Round = matrix => MatrixMap(matrix, x => Math.round(x));
@@ -288,7 +290,6 @@ Floor = matrix => MatrixMap(matrix, x => Math.floor(x));
 Ceil = matrix => MatrixMap(matrix, x => Math.ceil(x));
 Normalise = matrix => DivideScalar(matrix, MaxAbs(matrix)) ;
 NormaliseForColourMap = matrix => Normalise(SubtractScalar(matrix, Min(matrix)));
-
 
 // returning single values / reducing operations
 MatrixReduce = (matrix, func) => matrix.ToArray().reduce(func);
@@ -309,14 +310,29 @@ DiffVertical = matrix => Subtract(
     matrix.Sub(1, matrix.NumRows, 0, matrix.NumCols), 
     matrix.Sub(0, matrix.NumRows - 1, 0, matrix.NumCols));
 
-    
-function PadWithMultipleZeros(matrix, depth)
+function PadMultiple(matrix, depth, padValue)
 {
-    let paddedMatrix = Zeros(matrix.NumRows + 2 * depth, matrix.NumCols + 2 * depth);
+    let paddedMatrix = MultiplyScalar(Ones(matrix.NumRows + 2 * depth, matrix.NumCols + 2 * depth), padValue);
     paddedMatrix.SetSubMatrix(depth, paddedMatrix.NumRows - depth, depth, paddedMatrix.NumCols - depth, matrix);
     return paddedMatrix; 
 }
-PadWithZeros = (matrix) => PadWithMultipleZeros(matrix, 1);
+PadWithZeros = (matrix) => PadMultiple(matrix, 1, 0);
+PadWithOnes = (matrix) => PadMultiple(matrix, 1, 1);
+
+Gaussian2D = (X, Y, xc, yc, sig) => 
+    MultiplyScalar(
+        Exp(DivideScalar(Add(Pow2(SubtractScalar(X, xc)), Pow2(SubtractScalar(Y, yc))), -(2 * sig * sig))),
+        1 / sig * Math.sqrt(Tau));
+    
+AddNeighbours = (matrix) => Add(
+    matrix.Sub(0, matrix.NumRows - 2, 1, matrix.NumCols - 1), // up
+    matrix.Sub(2, matrix.NumRows - 0, 1, matrix.NumCols - 1), // down
+    matrix.Sub(1, matrix.NumRows - 1, 2, matrix.NumCols - 0), // right
+    matrix.Sub(1, matrix.NumRows - 1, 0, matrix.NumCols - 2), // left
+    matrix.Sub(0, matrix.NumRows - 2, 2, matrix.NumCols - 0), // up - right 
+    matrix.Sub(2, matrix.NumRows - 0, 2, matrix.NumCols - 0), // down - right
+    matrix.Sub(0, matrix.NumRows - 2, 0, matrix.NumCols - 2), // up left
+    matrix.Sub(2, matrix.NumRows - 0, 0, matrix.NumCols - 2)); // down left
 
 // =============================================================================
 // Constants

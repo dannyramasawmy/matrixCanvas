@@ -10,17 +10,11 @@ canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 // get mesh coordinates from canvas element
-let {X, Y, gridSpacing} = MeshGridFromCanvas(canvasId, 25);
+let {X, Y, gridSpacing} = MeshGridFromCanvas(canvasId, 150);
 
 // generate a random matrix array
-let V = RandomMatrix(X.NumRows, X.NumCols);
-let V2 = RandomMatrix(X.NumRows, X.NumCols);
-
-let phaseMatrix = MatrixMultiply
-(
-    Transpose(Linspace(-Tau, Tau, X.NumRows)), 
-    Linspace(-Tau, Tau, X.NumCols)
-);
+let randomStart = RandomMatrix(X.NumRows, X.NumCols);
+let currentTimeStep = MatrixMap(randomStart, x => x > 0.5 ? 1 : 0);
 
 function ClearCanvas(canvasId)
 {
@@ -30,17 +24,26 @@ function ClearCanvas(canvasId)
     c.fillRect(0, 0, innerWidth, innerHeight);
 }
 
-let phaseIncrement = Pi / 30;
-let linearPhase = 0;
+var frame = 0;
+
+ApplyRules = (c, n) =>
+{
+    if (c == 1 && (n == 2 || n == 3)) return 1;
+    if (c == 0 && n == 3) return 1;
+    return 0;
+}
 
 function animate() {
-    requestAnimationFrame(animate)
     
     ClearCanvas(canvasId);
+    GridPlot(canvasId, X, Y, currentTimeStep, gridSpacing, ScaledCircleMaker);
 
-    // update phase
-    linearPhase += phaseIncrement;
-    let wave = Sin(AddScalar(phaseMatrix, linearPhase)); 
-    GridPlot(canvasId, X, Y, wave, gridSpacing, ScaledCircleMaker);
+    let neighbours = AddNeighbours(PadWithZeros(currentTimeStep));
+
+    currentTimeStep =  MatrixMap2(currentTimeStep, neighbours, ApplyRules);
+    
+    console.log(`Frame ${frame++}`);
 }
 animate();
+setInterval(animate, 300);
+
