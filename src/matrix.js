@@ -200,8 +200,6 @@ function FlipHorizontal(matrix)
     return outputMatrix;
 }
 
-
-
 // linear steps 
 function Linspace(start, end, steps) 
 {
@@ -310,6 +308,15 @@ DiffHorizontal = matrix => Subtract(
 DiffVertical = matrix => Subtract(
     matrix.Sub(1, matrix.NumRows, 0, matrix.NumCols), 
     matrix.Sub(0, matrix.NumRows - 1, 0, matrix.NumCols));
+
+    
+function PadWithMultipleZeros(matrix, depth)
+{
+    let paddedMatrix = Zeros(matrix.NumRows + 2 * depth, matrix.NumCols + 2 * depth);
+    paddedMatrix.SetSubMatrix(depth, paddedMatrix.NumRows - depth, depth, paddedMatrix.NumCols - depth, matrix);
+    return paddedMatrix; 
+}
+PadWithZeros = (matrix) => PadWithMultipleZeros(matrix, 1);
 
 // =============================================================================
 // Constants
